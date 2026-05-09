@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Scholars of Tomorrow Institute</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080808;
+  --bg2:#0f0f0f;
+  --bg3:#141414;
+  --card:#111111;
+  --border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.14);
+  --border3:rgba(255,255,255,0.22);
+  --white:#f5f5f5;
+  --off:#c8c8c8;
+  --muted:#707070;
+  --muted2:#484848;
+  --accent:#ffffff;
+  --radius:12px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--white);font-size:16px;line-height:1.7;overflow-x:hidden}
+
+#scramble-canvas{position:fixed;inset:0;pointer-events:none;z-index:0}
+
+nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(8,8,8,0.88);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 52px;height:72px;
+}
+.nav-logo{display:flex;align-items:center;gap:14px}
+.nav-logo img{height:40px;width:40px;object-fit:contain}
+.nav-logo-text{font-family:'Playfair Display',serif;color:var(--white);font-size:16px;font-weight:600;line-height:1.25}
+.nav-links{display:flex;gap:36px;align-items:center}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:14px;letter-spacing:0.2px;transition:color 0.2s}
+.nav-links a:hover{color:var(--white)}
+.nav-cta{
+  color:var(--bg) !important;background:var(--white);
+  padding:8px 22px;border-radius:6px;font-weight:500 !important;
+  font-size:14px !important;letter-spacing:0.3px;
+  transition:opacity 0.2s !important;
+}
+.nav-cta:hover{opacity:0.85}
+
+.hero{
+  position:relative;z-index:1;
+  padding:120px 52px 100px;
+  min-height:90vh;display:flex;align-items:center;
+}
+.hero-inner{max-width:700px;position:relative;z-index:2}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid var(--border2);
+  color:var(--off);font-size:11px;font-weight:500;
+  padding:5px 16px;border-radius:100px;
+  margin-bottom:36px;letter-spacing:1.5px;text-transform:uppercase;
+  font-family:'JetBrains Mono',monospace;
+}
+.hero h1{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(40px,5.5vw,68px);
+  font-weight:700;line-height:1.1;margin-bottom:28px;color:var(--white);
+}
+.hero h1 em{font-style:italic;color:var(--off)}
+.hero p{
+  font-size:18px;color:var(--muted);
+  max-width:520px;line-height:1.8;margin-bottom:44px;font-weight:300;
+}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap}
+.btn-primary{
+  background:var(--white);color:var(--bg);
+  padding:14px 30px;border-radius:8px;
+  font-weight:500;font-size:15px;text-decoration:none;
+  transition:opacity 0.2s;display:inline-block;
+}
+.btn-primary:hover{opacity:0.88}
+.btn-outline{
+  background:transparent;color:var(--off);
+  border:1px solid var(--border2);
+  padding:14px 30px;border-radius:8px;font-size:15px;
+  text-decoration:none;display:inline-block;transition:border-color 0.2s,color 0.2s;
+}
+.btn-outline:hover{border-color:var(--border3);color:var(--white)}
+
+.stats-strip{
+  position:relative;z-index:1;
+  background:var(--bg2);
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  display:flex;justify-content:center;
+}
+.stat{padding:30px 56px;text-align:center;border-right:1px solid var(--border)}
+.stat:last-child{border-right:none}
+.stat-num{
+  font-family:'Playfair Display',serif;
+  font-size:34px;font-weight:600;color:var(--white);display:block;
+}
+.stat-label{font-size:13px;color:var(--muted);margin-top:4px;letter-spacing:0.2px}
+
+section{position:relative;z-index:1;padding:96px 52px}
+.section-label{
+  font-size:11px;font-weight:400;letter-spacing:2.5px;
+  text-transform:uppercase;color:var(--muted);margin-bottom:14px;
+  font-family:'JetBrains Mono',monospace;
+}
+h2{
+  font-family:'Playfair Display',serif;
+  font-size:40px;font-weight:600;line-height:1.2;
+  color:var(--white);margin-bottom:16px;
+}
+.section-sub{color:var(--muted);font-size:16px;max-width:560px;margin-bottom:56px;line-height:1.75}
+
+.mission-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.mission-card{background:var(--card);padding:36px 32px;transition:background 0.2s}
+.mission-card:hover{background:var(--bg3)}
+.mission-icon{
+  width:44px;height:44px;border-radius:8px;
+  background:rgba(255,255,255,0.06);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;margin-bottom:20px;
+}
+.mission-card h3{
+  font-family:'Playfair Display',serif;
+  font-size:19px;font-weight:600;color:var(--white);margin-bottom:10px;
+}
+.mission-card p{color:var(--muted);font-size:15px;line-height:1.7}
+
+.initiative-block{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+  display:grid;grid-template-columns:1fr 1fr;
+}
+.initiative-left{padding:48px 44px;border-right:1px solid var(--border)}
+.initiative-left p{color:var(--muted);font-size:15px;margin-bottom:18px;line-height:1.75}
+.initiative-left strong{color:var(--white);font-weight:500}
+.initiative-right{padding:48px 44px;display:flex;flex-direction:column;justify-content:center}
+.goal-num{
+  font-family:'Playfair Display',serif;
+  font-size:60px;font-weight:700;color:var(--white);line-height:1;
+}
+.goal-sub{color:var(--muted);font-size:14px;margin-top:8px;margin-bottom:32px;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.5px}
+.progress-track{background:rgba(255,255,255,0.07);border-radius:8px;height:1px;overflow:visible;margin-bottom:10px;position:relative}
+.progress-fill{background:var(--white);height:1px;width:0%;transition:width 1.6s cubic-bezier(0.4,0,0.2,1);position:relative}
+.progress-fill::after{content:'';position:absolute;right:-3px;top:-3px;width:7px;height:7px;border-radius:50%;background:var(--white)}
+.progress-label{font-size:12px;color:var(--muted2);font-family:'JetBrains Mono',monospace;letter-spacing:0.3px}
+.initiative-cta{
+  display:inline-block;margin-top:32px;
+  background:var(--white);color:var(--bg);
+  padding:13px 26px;border-radius:8px;
+  font-weight:500;font-size:15px;text-decoration:none;text-align:center;
+  transition:opacity 0.2s;align-self:flex-start;
+}
+.initiative-cta:hover{opacity:0.88}
+
+.donate-wrap{position:relative;z-index:1;margin:0 52px 96px}
+.donate-section{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:16px;padding:68px 60px;
+  display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;
+}
+.donate-section h2{color:var(--white);margin-bottom:12px}
+.donate-section>div>p{color:var(--muted);font-size:16px;line-height:1.75}
+.fiscal-note{
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--border);border-radius:8px;
+  padding:14px 18px;margin-top:20px;
+  font-size:13px;color:var(--muted2);line-height:1.65;
+  font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.2px;
+}
+.fiscal-note strong{color:var(--muted)}
+.donate-form{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--radius);padding:36px}
+.form-label{font-size:11px;color:var(--muted2);margin-bottom:16px;letter-spacing:2px;text-transform:uppercase;font-family:'JetBrains Mono',monospace}
+.donate-amounts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+.amount-btn{
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--border);
+  color:var(--muted);padding:11px;border-radius:6px;
+  font-size:15px;font-weight:400;cursor:pointer;text-align:center;
+  transition:all 0.15s;font-family:'DM Sans',sans-serif;
+}
+.amount-btn:hover{border-color:var(--border2);color:var(--off)}
+.amount-btn.active{background:var(--white);color:var(--bg);border-color:var(--white);font-weight:500}
+.donate-submit{
+  width:100%;background:var(--white);color:var(--bg);border:none;
+  padding:14px;border-radius:8px;font-size:15px;font-weight:500;
+  cursor:pointer;font-family:'DM Sans',sans-serif;
+  text-decoration:none;display:block;text-align:center;margin-top:14px;
+  transition:opacity 0.2s;
+}
+.donate-submit:hover{opacity:0.88}
+.secure-note{text-align:center;font-size:11px;color:var(--muted2);margin-top:12px;font-family:'JetBrains Mono',monospace;letter-spacing:0.5px}
+
+footer{position:relative;z-index:1;background:var(--bg2);border-top:1px solid var(--border);padding:48px 52px}
+.footer-inner{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px}
+.footer-logo{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.footer-logo img{height:32px;width:32px;object-fit:contain}
+.footer-logo-text{font-family:'Playfair Display',serif;color:var(--white);font-size:15px;font-weight:600}
+.footer-links{display:flex;gap:28px}
+.footer-links a{color:var(--muted2);text-decoration:none;font-size:13px;transition:color 0.2s}
+.footer-links a:hover{color:var(--white)}
+.footer-fiscal{border-top:1px solid var(--border);padding-top:22px;font-size:12px;color:var(--muted2);line-height:1.75;font-family:'JetBrains Mono',monospace;letter-spacing:0.2px}
+
+@media(max-width:768px){
+  nav{padding:0 20px}
+  .hero{padding:72px 20px;min-height:auto}
+  section{padding:60px 20px}
+  .stats-strip{flex-wrap:wrap}
+  .mission-grid{grid-template-columns:1fr}
+  .initiative-block{grid-template-columns:1fr}
+  .initiative-left{border-right:none;border-bottom:1px solid var(--border)}
+  .donate-wrap{margin:0 20px 60px}
+  .donate-section{grid-template-columns:1fr;padding:40px 28px;gap:40px}
+  .footer-inner{flex-direction:column;gap:24px}
+}
+</style>
+</head>
+<body>
+
+<canvas id="scramble-canvas"></canvas>
+
+<nav>
+  <div class="nav-logo">
+    <img src="data:image/png;base64,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" alt="Scholars of Tomorrow Institute logo"/>
+    <div class="nav-logo-text">Scholars of Tomorrow<br>Institute</div>
+  </div>
+  <div class="nav-links">
+    <a href="#mission">Mission</a>
+    <a href="#programs">Programs</a>
+    <a href="#donate">Donate</a>
+    <a href="https://hcb.hackclub.com/donations/start/scholars-of-tomorrow-institute" class="nav-cta" target="_blank">Give Now</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">// STEM &amp; Scientific Research for Youth</div>
+    <h1>Bringing <em>science</em> to the next generation</h1>
+    <p>Scholars of Tomorrow Institute introduces middle and high school students to STEM and scientific research — giving them real-world exposure, hands-on experience, and a path to discovery.</p>
+    <div class="hero-btns">
+      <a href="https://hcb.hackclub.com/donations/start/scholars-of-tomorrow-institute" class="btn-primary" target="_blank">Make a Donation</a>
+      <a href="#mission" class="btn-outline">Learn Our Story</a>
+    </div>
+  </div>
+</div>
+
+<div class="stats-strip">
+  <div class="stat"><span class="stat-num">$75K</span><div class="stat-label">DC Initiative goal</div></div>
+  <div class="stat"><span class="stat-num">6–12</span><div class="stat-label">Grades we serve</div></div>
+  <div class="stat"><span class="stat-num">50%</span><div class="stat-label">Travel cost reduction goal</div></div>
+  <div class="stat"><span class="stat-num">100%</span><div class="stat-label">Student-focused mission</div></div>
+</div>
+
+<section id="mission">
+  <div class="section-label">// Our mission</div>
+  <h2>STEM access for every young scholar</h2>
+  <p class="section-sub">We believe every middle and high school student deserves hands-on exposure to STEM and scientific research — not just in the classroom, but in the real world.</p>
+  <div class="mission-grid">
+    <div class="mission-card">
+      <div class="mission-icon">🔬</div>
+      <h3>Scientific Research</h3>
+      <p>Introducing students to real research methods, scientific thinking, and the disciplines that drive discovery.</p>
+    </div>
+    <div class="mission-card">
+      <div class="mission-icon">🚀</div>
+      <h3>STEM Exposure</h3>
+      <p>Hands-on programs that connect youth to science, technology, engineering, and math in meaningful, inspiring ways.</p>
+    </div>
+    <div class="mission-card">
+      <div class="mission-icon">🌍</div>
+      <h3>Real-World Experience</h3>
+      <p>Taking learning beyond the classroom with travel initiatives and experiential programs that open students' eyes to careers in STEM.</p>
+    </div>
+  </div>
+</section>
+
+<section id="programs" style="padding-top:0">
+  <div class="section-label">// Active program</div>
+  <h2>Washington DC North Union<br>Travel Initiative</h2>
+  <p class="section-sub">Our flagship program gives students a once-in-a-lifetime opportunity to experience science and discovery in the nation's capital.</p>
+  <div class="initiative-block">
+    <div class="initiative-left">
+      <div class="section-label" style="margin-bottom:18px">// About this initiative</div>
+      <p>We're working to bring students to Washington DC for an immersive STEM and research experience. To make this trip accessible to all students regardless of financial background, we're raising funds to <strong>cut student travel costs in half.</strong></p>
+      <p>This is a fully independent Scholars of Tomorrow initiative — designed, organized, and led entirely by our team.</p>
+    </div>
+    <div class="initiative-right">
+      <div class="section-label" style="margin-bottom:18px">// Fundraising goal</div>
+      <div class="goal-num">$75,000</div>
+      <div class="goal-sub">TO HALVE STUDENT TRAVEL COSTS</div>
+      <div class="progress-track"><div class="progress-fill" id="progress-bar"></div></div>
+      <div class="progress-label" id="progress-label">0% raised — help us get there</div>
+      <a href="https://hcb.hackclub.com/donations/start/scholars-of-tomorrow-institute" target="_blank" class="initiative-cta">Support this trip →</a>
+    </div>
+  </div>
+</section>
+
+<div class="donate-wrap" id="donate">
+  <div class="donate-section">
+    <div>
+      <div class="section-label">// Support our work</div>
+      <h2>Every dollar shapes a scholar's future</h2>
+      <p>Your contribution directly supports STEM programming and our DC Travel Initiative — helping us cut student travel costs in half so every scholar can participate.</p>
+      <div class="fiscal-note">
+        <strong>FISCALLY SPONSORED BY THE HACK FOUNDATION</strong> (d.b.a. Hack Club), a 501(c)(3) nonprofit (EIN: 81-2908499). Your donation is tax-deductible.
+      </div>
+    </div>
+    <div class="donate-form">
+      <div class="form-label">Choose an amount</div>
+      <div class="donate-amounts">
+        <button class="amount-btn" onclick="setAmount(this,'25')">$25</button>
+        <button class="amount-btn active" onclick="setAmount(this,'50')">$50</button>
+        <button class="amount-btn" onclick="setAmount(this,'100')">$100</button>
+        <button class="amount-btn" onclick="setAmount(this,'250')">$250</button>
+        <button class="amount-btn" onclick="setAmount(this,'500')">$500</button>
+        <button class="amount-btn" onclick="setAmount(this,'')">Custom</button>
+      </div>
+      <p style="font-size:12px;color:var(--muted2);text-align:center;margin-bottom:6px;font-family:'JetBrains Mono',monospace;letter-spacing:0.3px">Redirects to our secure HCB donation page</p>
+      <a id="donate-link" href="https://hcb.hackclub.com/donations/start/scholars-of-tomorrow-institute" class="donate-submit" target="_blank">Donate $50 →</a>
+      <p class="secure-note">🔒 SECURE · TAX-DEDUCTIBLE · 501(C)(3)</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo">
+        <img src="data:image/png;base64,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" alt="Scholars of Tomorrow Institute"/>
+        <div class="footer-logo-text">Scholars of Tomorrow Institute</div>
+      </div>
+      <div class="footer-links">
+        <a href="#mission">Mission</a>
+        <a href="#programs">Programs</a>
+        <a href="https://hcb.hackclub.com/donations/start/scholars-of-tomorrow-institute" target="_blank">Donate</a>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--muted2);text-align:right;font-family:'JetBrains Mono',monospace">© 2026 Scholars of Tomorrow Institute</div>
+  </div>
+  <div class="footer-fiscal">
+    Scholars of Tomorrow Institute is fiscally sponsored by The Hack Foundation (d.b.a. Hack Club), a 501(c)(3) nonprofit (EIN: 81-2908499). Donations are tax-deductible to the extent permitted by law.
+  </div>
+</footer>
+
+<script>
+(function(){
+  const canvas = document.getElementById('scramble-canvas');
+  const ctx = canvas.getContext('2d');
+  const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789αβγδεζηθλμνξπρστφχψω∑∞∂∇∫≈≡±√∈⊂';
+  const WORDS = ['DNA','RNA','ATP','PCR','CRISPR','STEM','SCIENCE','RESEARCH','PHYSICS','BIOLOGY','CHEMISTRY','NEURON','GENOME','PHOTON','QUANTUM','MOLECULE','CATALYST','HYPOTHESIS','TELESCOPE','MICROSCOPE','COSMOS','SCHOLAR','DISCOVERY','NITROGEN','CARBON','PROTON','ELECTRON','ENTROPY'];
+  let mouse={x:-999,y:-999};
+  const CW=16,CH=20;
+  let cols,rows,cells=[];
+
+  function resize(){
+    canvas.width=window.innerWidth;
+    canvas.height=window.innerHeight;
+    cols=Math.ceil(canvas.width/CW);
+    rows=Math.ceil(canvas.height/CH);
+    cells=[];
+    for(let r=0;r<rows;r++)
+      for(let c=0;c<cols;c++)
+        cells.push({c,r,char:rndChar(),op:Math.random()*0.035+0.005,tOp:Math.random()*0.035+0.005,t:Math.random()*80,iv:50+Math.random()*100});
+    scatterWords();
+  }
+
+  function rndChar(){return CHARS[Math.floor(Math.random()*CHARS.length)]}
+
+  function scatterWords(){
+    for(let i=0;i<22;i++){
+      const w=WORDS[Math.floor(Math.random()*WORDS.length)];
+      const row=Math.floor(Math.random()*rows);
+      const col=Math.floor(Math.random()*(cols-w.length));
+      for(let j=0;j<w.length;j++){
+        const idx=row*cols+col+j;
+        if(cells[idx]){cells[idx].char=w[j];cells[idx].op=0.06;cells[idx].tOp=0.06;}
+      }
+    }
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.font='300 10px "JetBrains Mono",monospace';
+    const R=160,PEAK=0.72;
+    for(let i=0;i<cells.length;i++){
+      const cl=cells[i];
+      const cx=cl.c*CW+CW/2,cy=cl.r*CH+CH/2;
+      const dx=cx-mouse.x,dy=cy-mouse.y;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      let extra=0;
+      if(dist<R){
+        extra=(1-dist/R)*PEAK;
+        cl.t+=5;
+      } else {
+        cl.t+=1;
+      }
+      if(cl.t>=cl.iv){
+        cl.t=0;cl.iv=50+Math.random()*100;
+        cl.char=rndChar();
+        cl.tOp=Math.random()*0.04+0.006;
+      }
+      cl.op+=(cl.tOp-cl.op)*0.04;
+      const op=Math.min(1,cl.op+extra);
+      if(op<0.004) continue;
+      ctx.fillStyle=`rgba(255,255,255,${op})`;
+      ctx.fillText(cl.char,cl.c*CW,cl.r*CH+CH-3);
+    }
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY});
+  window.addEventListener('touchmove',e=>{mouse.x=e.touches[0].clientX;mouse.y=e.touches[0].clientY},{passive:true});
+  window.addEventListener('resize',resize);
+  resize();
+  requestAnimationFrame(draw);
+  setInterval(scatterWords,14000);
+})();
+
+const amtMap={'25':'$25','50':'$50','100':'$100','250':'$250','500':'$500'};
+function setAmount(btn,val){
+  document.querySelectorAll('.amount-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const link=document.getElementById('donate-link');
+  link.textContent=val?'Donate '+amtMap[val]+' →':'Donate Now →';
+}
+
+window.addEventListener('load',function(){
+  setTimeout(function(){
+    const lbl=document.getElementById('progress-label');
+    if(lbl){lbl.textContent='$0 raised — be the first to contribute'}
+  },700);
+});
+</script>
+</body>
+</html>
